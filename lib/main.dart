@@ -23,8 +23,75 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController loginEmailController = TextEditingController();
+  final TextEditingController loginPasswordController = TextEditingController();
+  final TextEditingController registerEmailController = TextEditingController();
+  final TextEditingController registerPasswordController =
+      TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // 🔥 Registreren van een nieuwe gebruiker
+  Future<void> register() async {
+    if (registerPasswordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Wachtwoorden komen niet overeen')),
+      );
+      return;
+    }
+
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: registerEmailController.text.trim(),
+        password: registerPasswordController.text.trim(),
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Account aangemaakt!')));
+    } on FirebaseAuthException catch (e) {
+      String message = 'Registratie mislukt';
+      if (e.code == 'weak-password') {
+        message = 'Het wachtwoord is te zwak.';
+      } else if (e.code == 'email-already-in-use') {
+        message = 'Dit e-mailadres is al in gebruik.';
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
+  }
+
+  // 🔑 Inloggen met bestaande gebruikersgegevens
+  Future<void> login() async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: loginEmailController.text.trim(),
+        password: loginPasswordController.text.trim(),
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Succesvol ingelogd!')));
+    } on FirebaseAuthException catch (e) {
+      String message = 'Login mislukt';
+      if (e.code == 'user-not-found') {
+        message = 'Geen account gevonden voor dit e-mailadres.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Ongeldig wachtwoord.';
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +103,6 @@ class LoginScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Login Section
             const Text(
               'Login',
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
@@ -44,7 +110,8 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Text('Email', style: TextStyle(fontSize: 16)),
             TextField(
-              decoration: InputDecoration(
+              controller: loginEmailController,
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter your email',
               ),
@@ -52,8 +119,9 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Text('Password', style: TextStyle(fontSize: 16)),
             TextField(
+              controller: loginPasswordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter your password',
               ),
@@ -61,17 +129,11 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 30),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Voeg hier je login-functionaliteit toe
-                  print('Login button pressed');
-                },
+                onPressed: login,
                 child: const Text('Login'),
               ),
             ),
-            const SizedBox(
-              height: 40,
-            ), // Spacing between login and register sections
-            // Register Section
+            const SizedBox(height: 40), // Spacing tussen login en register
             const Text(
               'Register',
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
@@ -79,7 +141,8 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Text('Email', style: TextStyle(fontSize: 16)),
             TextField(
-              decoration: InputDecoration(
+              controller: registerEmailController,
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter your email',
               ),
@@ -87,8 +150,9 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Text('Password', style: TextStyle(fontSize: 16)),
             TextField(
+              controller: registerPasswordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter your password',
               ),
@@ -96,8 +160,9 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Text('Confirm Password', style: TextStyle(fontSize: 16)),
             TextField(
+              controller: confirmPasswordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Confirm your password',
               ),
@@ -105,10 +170,7 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 30),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Voeg hier je registratie-functionaliteit toe
-                  print('Register button pressed');
-                },
+                onPressed: register,
                 child: const Text('Register'),
               ),
             ),
