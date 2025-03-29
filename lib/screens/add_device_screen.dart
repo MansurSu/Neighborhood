@@ -19,15 +19,14 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Save device to Firestore
   Future<void> addDevice() async {
     try {
       final device = Device(
         name: nameController.text.trim(),
         description: descriptionController.text.trim(),
-        imageUrl: 'image_url', // You can add an image URL here
+        imageUrl: 'image_url', 
         price: double.parse(priceController.text.trim()),
-        available: true, // Default to available
+        available: true,
         category: categoryController.text.trim(),
         location: locationController.text.trim(),
       );

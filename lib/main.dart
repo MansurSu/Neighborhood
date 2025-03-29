@@ -41,7 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
       TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // 🔥 Registreren van een nieuwe gebruiker
   Future<void> register() async {
     if (registerPasswordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -138,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Text('Login'),
               ),
             ),
-            const SizedBox(height: 40), // Spacing tussen login en register
+            const SizedBox(height: 40), 
             const Text(
               'Register',
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
