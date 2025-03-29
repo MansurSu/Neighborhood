@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import './screens/overview_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Succesvol ingelogd!')));
+      // ⬇️ Navigeer naar het Overview-scherm
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const OverviewScreen()),
+      );
     } on FirebaseAuthException catch (e) {
       String message = 'Login mislukt';
       if (e.code == 'user-not-found') {
