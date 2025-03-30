@@ -26,7 +26,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         description: descriptionController.text.trim(),
         imageUrl: 'image_url', 
         price: double.parse(priceController.text.trim()),
-        available: true,
+        available: true, 
         category: categoryController.text.trim(),
         location: locationController.text.trim(),
       );
