@@ -4,8 +4,17 @@ import '../classes/device_model.dart';
 import 'add_device_screen.dart';
 import 'device_detail_screen.dart';
 
-class OverviewScreen extends StatelessWidget {
+class OverviewScreen extends StatefulWidget {
   const OverviewScreen({super.key});
+
+  @override
+  State<OverviewScreen> createState() => _OverviewScreenState();
+}
+
+class _OverviewScreenState extends State<OverviewScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Device> _searchResults = [];
+  bool _isSearching = false;
 
   final List<String> categories = const [
     'Tools & DIY',
@@ -15,26 +24,96 @@ class OverviewScreen extends StatelessWidget {
     'Home Appliances',
   ];
 
+  void _searchDevices(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _isSearching = false;
+        _searchResults = [];
+      });
+      return;
+    }
+
+    final result =
+        await FirebaseFirestore.instance
+            .collection('devices')
+            .where('name', isGreaterThanOrEqualTo: query)
+            .where('name', isLessThanOrEqualTo: '$query\uf8ff')
+            .get();
+
+    final devices =
+        result.docs
+            .map((doc) => Device.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
+
+    setState(() {
+      _isSearching = true;
+      _searchResults = devices;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Categories')),
-      body: ListView.builder(
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final category = categories[index];
-          return ListTile(
-            title: Text(category),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ItemListScreen(categoryName: category),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Zoek naar een apparaat...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              );
-            },
-          );
-        },
+              ),
+              onChanged: _searchDevices,
+            ),
+          ),
+          Expanded(
+            child:
+                _isSearching
+                    ? ListView.builder(
+                      itemCount: _searchResults.length,
+                      itemBuilder: (context, index) {
+                        final device = _searchResults[index];
+                        return ListTile(
+                          title: Text(device.name),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        DeviceDetailScreen(device: device),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    )
+                    : ListView.builder(
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        final category = categories[index];
+                        return ListTile(
+                          title: Text(category),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        ItemListScreen(categoryName: category),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
