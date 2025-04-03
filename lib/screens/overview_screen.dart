@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../classes/device_model.dart';
 import 'add_device_screen.dart';
+import 'device_detail_screen.dart';
 
 class OverviewScreen extends StatelessWidget {
   const OverviewScreen({super.key});
@@ -74,13 +75,25 @@ class ItemListScreen extends StatelessWidget {
             return const Center(child: Text('Geen items in deze categorie'));
           }
 
-          final items =
-              snapshot.data!.docs.map((doc) => doc['name'] as String).toList();
+          final docs = snapshot.data!.docs;
 
           return ListView.builder(
-            itemCount: items.length,
+            itemCount: docs.length,
             itemBuilder: (context, index) {
-              return ListTile(title: Text(items[index]));
+              final doc = docs[index];
+              final device = Device.fromMap(doc.data() as Map<String, dynamic>);
+
+              return ListTile(
+                title: Text(device.name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DeviceDetailScreen(device: device),
+                    ),
+                  );
+                },
+              );
             },
           );
         },
