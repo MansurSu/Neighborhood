@@ -1,53 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../classes/device_model.dart';
-import 'add_device_screen.dart'; 
+import 'add_device_screen.dart';
 
 class OverviewScreen extends StatelessWidget {
   const OverviewScreen({super.key});
 
+  final List<String> categories = const [
+    'Tools & DIY',
+    'Party & Events',
+    'Sports & Outdoor',
+    'Electronics',
+    'Home Appliances',
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final devices = [
-      Device(
-        name: 'Washing Machine',
-        description: 'A powerful washing machine for your laundry.',
-        imageUrl: 'image_url', 
-        price: 5.0,
-        available: true,
-        category: 'Appliance',
-        location: 'Location 1',
-      ),
-      Device(
-        name: 'Fridge',
-        description: 'A large fridge with ample storage space.',
-        imageUrl: 'image_url', 
-        price: 8.0,
-        available: true,
-        category: 'Appliance',
-        location: 'Location 2',
-      ),
-      Device(
-        name: 'Microwave',
-        description: 'A microwave for quick heating and cooking.',
-        imageUrl: 'image_url',
-        price: 3.0,
-        available: true,
-        category: 'Appliance',
-        location: 'Location 3',
-      ),
-    ];
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Overview')),
+      appBar: AppBar(title: const Text('Categories')),
       body: ListView.builder(
-        itemCount: devices.length,
+        itemCount: categories.length,
         itemBuilder: (context, index) {
-          final device = devices[index];
+          final category = categories[index];
           return ListTile(
-            title: Text(device.name),
-            subtitle: Text(device.description),
-            trailing: Text('\$${device.price}'),
+            title: Text(category),
             onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ItemListScreen(categoryName: category),
+                ),
+              );
             },
           );
         },
@@ -60,7 +43,47 @@ class OverviewScreen extends StatelessWidget {
           );
         },
         child: const Icon(Icons.add),
-        tooltip: 'Add Device', 
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+}
+
+class ItemListScreen extends StatelessWidget {
+  final String categoryName;
+
+  const ItemListScreen({Key? key, required this.categoryName})
+    : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(categoryName)),
+      body: StreamBuilder<QuerySnapshot>(
+        stream:
+            FirebaseFirestore.instance
+                .collection('devices')
+                .where('category', isEqualTo: categoryName)
+                .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('Geen items in deze categorie'));
+          }
+
+          final items =
+              snapshot.data!.docs.map((doc) => doc['name'] as String).toList();
+
+          return ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              return ListTile(title: Text(items[index]));
+            },
+          );
+        },
       ),
     );
   }

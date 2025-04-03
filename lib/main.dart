@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ).showSnackBar(const SnackBar(content: Text('Succesvol ingelogd!')));
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const OverviewScreen()),
+        MaterialPageRoute(builder: (context) => OverviewScreen()),
       );
     } on FirebaseAuthException catch (e) {
       String message = 'Login mislukt';
