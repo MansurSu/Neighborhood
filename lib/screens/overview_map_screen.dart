@@ -39,48 +39,51 @@ class _OverviewMapScreenState extends State<OverviewMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('devices').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Scaffold(
+      appBar: AppBar(title: Text("Map")),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('devices').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(child: Text('Geen items in deze categorie'));
-        }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('Geen items in deze categorie'));
+          }
 
-        final docs = snapshot.data!.docs;
-        final devices =
-            docs
-                .map(
-                  (doc) => Device.fromMap(doc.data() as Map<String, dynamic>),
-                )
-                .toList();
-        _searchResults = devices;
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text(snapshot.error.toString()));
-        } else {
-          return FlutterMap(
-            options: MapOptions(
-              initialCenter: LatLng(
-                51.509364,
-                -0.128928,
-              ), // Center the map over London
-              initialZoom: 9.2,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate:
-                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          final docs = snapshot.data!.docs;
+          final devices =
+              docs
+                  .map(
+                    (doc) => Device.fromMap(doc.data() as Map<String, dynamic>),
+                  )
+                  .toList();
+          _searchResults = devices;
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          } else {
+            return FlutterMap(
+              options: MapOptions(
+                initialCenter: LatLng(
+                  51.509364,
+                  -0.128928,
+                ), // Center the map over London
+                initialZoom: 9.2,
               ),
-              MarkerLayer(markers: _createMarkers(_searchResults)),
-            ],
-          );
-        }
-      },
+              children: [
+                TileLayer(
+                  urlTemplate:
+                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                ),
+                MarkerLayer(markers: _createMarkers(_searchResults)),
+              ],
+            );
+          }
+        },
+      ),
     );
   }
 }
