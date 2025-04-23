@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 import '../classes/device_model.dart';
 
 class AddDeviceScreen extends StatefulWidget {
@@ -47,6 +49,12 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     }
 
     try {
+      final location = locationController.text.trim();
+      final request = await http.get(
+        Uri.parse(
+          "https://nominatim.openstreetmap.org/search.php?q=${location.replaceAll(" ", "+")}&format=jsonv2",
+        ),
+      );
       final device = Device(
         name: nameController.text.trim(),
         description: descriptionController.text.trim(),
@@ -54,15 +62,18 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         price: parsedPrice,
         available: true,
         category: selectedCategory,
-        location: locationController.text.trim(),
+        location: location,
+        latitude: double.parse(jsonDecode(request.body)[0]['lat']),
+        longitude: double.parse(jsonDecode(request.body)[0]['lon']),
       );
-
+      print(device.toMap());
       await _firestore.collection('devices').add(device.toMap());
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Device toegevoegd!')));
       Navigator.pop(context);
     } catch (e) {
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Er ging iets mis bij het toevoegen')),
       );

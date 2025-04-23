@@ -6,6 +6,8 @@ class Device {
   final bool available;
   final String category;
   final String location;
+  final double latitude;
+  final double longitude;
 
   Device({
     required this.name,
@@ -15,6 +17,8 @@ class Device {
     required this.available,
     required this.category,
     required this.location,
+    required this.latitude,
+    required this.longitude,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +30,8 @@ class Device {
       'available': available,
       'category': category,
       'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
@@ -37,7 +43,9 @@ class Device {
       price: map['price'],
       available: map['available'],
       category: map['category'],
-      location: map['location'],
+      location: map['location'] ?? 'Unknown',
+      latitude: map['latitude'] ?? 0.0,
+      longitude: map['longitude'] ?? 0.0,
     );
   }
 }

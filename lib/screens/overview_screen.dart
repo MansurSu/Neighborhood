@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:neighborhood_app/screens/overview_map_screen.dart';
 import '../classes/device_model.dart';
 import 'add_device_screen.dart';
 import 'device_detail_screen.dart';
@@ -33,15 +34,17 @@ class _OverviewScreenState extends State<OverviewScreen> {
       return;
     }
 
-    final result = await FirebaseFirestore.instance
-        .collection('devices')
-        .where('name', isGreaterThanOrEqualTo: query)
-        .where('name', isLessThanOrEqualTo: '$query\uf8ff')
-        .get();
+    final result =
+        await FirebaseFirestore.instance
+            .collection('devices')
+            .where('name', isGreaterThanOrEqualTo: query)
+            .where('name', isLessThanOrEqualTo: '$query\uf8ff')
+            .get();
 
-    final devices = result.docs
-        .map((doc) => Device.fromMap(doc.data() as Map<String, dynamic>))
-        .toList();
+    final devices =
+        result.docs
+            .map((doc) => Device.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
 
     setState(() {
       _isSearching = true;
@@ -65,18 +68,19 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     decoration: InputDecoration(
                       hintText: 'Zoek naar een apparaat... 🔍',
                       prefixIcon: const Icon(Icons.search),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                setState(() {
-                                  _searchController.clear();
-                                  _isSearching = false;
-                                  _searchResults = [];
-                                });
-                              },
-                            )
-                          : null,
+                      suffixIcon:
+                          _searchController.text.isNotEmpty
+                              ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  setState(() {
+                                    _searchController.clear();
+                                    _isSearching = false;
+                                    _searchResults = [];
+                                  });
+                                },
+                              )
+                              : null,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -88,46 +92,62 @@ class _OverviewScreenState extends State<OverviewScreen> {
                   onPressed: () => _searchDevices(_searchController.text),
                   icon: const Icon(Icons.search),
                   label: const Text("Zoek"),
-                )
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OverviewMapScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text('Map'),
+                ),
               ],
             ),
           ),
           Expanded(
-            child: _isSearching
-                ? ListView.builder(
-                    itemCount: _searchResults.length,
-                    itemBuilder: (context, index) {
-                      final device = _searchResults[index];
-                      return ListTile(
-                        title: Text(device.name),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DeviceDetailScreen(device: device),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  )
-                : ListView.builder(
-                    itemCount: categories.length,
-                    itemBuilder: (context, index) {
-                      final category = categories[index];
-                      return ListTile(
-                        title: Text(category),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ItemListScreen(categoryName: category),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
+            child:
+                _isSearching
+                    ? ListView.builder(
+                      itemCount: _searchResults.length,
+                      itemBuilder: (context, index) {
+                        final device = _searchResults[index];
+                        return ListTile(
+                          title: Text(device.name),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        DeviceDetailScreen(device: device),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    )
+                    : ListView.builder(
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        final category = categories[index];
+                        return ListTile(
+                          title: Text(category),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        ItemListScreen(categoryName: category),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
           ),
         ],
       ),
@@ -149,17 +169,18 @@ class ItemListScreen extends StatelessWidget {
   final String categoryName;
 
   const ItemListScreen({Key? key, required this.categoryName})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(categoryName)),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('devices')
-            .where('category', isEqualTo: categoryName)
-            .snapshots(),
+        stream:
+            FirebaseFirestore.instance
+                .collection('devices')
+                .where('category', isEqualTo: categoryName)
+                .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
