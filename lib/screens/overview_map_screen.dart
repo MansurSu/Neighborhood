@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
 import '../classes/device_model.dart';
 import 'device_detail_screen.dart';
 
@@ -14,6 +15,29 @@ class OverviewMapScreen extends StatefulWidget {
 
 class _OverviewMapScreenState extends State<OverviewMapScreen> {
   List<Device> _searchResults = [];
+  late LatLng _center;
+  late Position currentLocation;
+  bool isLoading = true;
+  double radius = 5000;
+  @override
+  void initState() {
+    super.initState();
+    getUserLocation();
+  }
+
+  Future<Position> locateUser() async {
+    return Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+  }
+
+  getUserLocation() async {
+    currentLocation = await locateUser();
+    setState(() {
+      _center = LatLng(currentLocation.latitude, currentLocation.longitude);
+    });
+    isLoading = false;
+  }
 
   //add markers with the location of the devices to the map
   List<Marker> _createMarkers(List<Device> devices) {
@@ -65,22 +89,31 @@ class _OverviewMapScreenState extends State<OverviewMapScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text(snapshot.error.toString()));
           } else {
-            return FlutterMap(
-              options: MapOptions(
-                initialCenter: LatLng(
-                  51.509364,
-                  -0.128928,
-                ), // Center the map over London
-                initialZoom: 9.2,
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate:
-                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                ),
-                MarkerLayer(markers: _createMarkers(_searchResults)),
-              ],
-            );
+            return isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : FlutterMap(
+                  //draw a circe to the map at a certain distance from the _center
+                  options: MapOptions(initialCenter: _center, initialZoom: 9.2),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    ),
+                    CircleLayer(
+                      circles: [
+                        CircleMarker(
+                          point: _center,
+                          useRadiusInMeter: true,
+                          radius: radius,
+                          color: Colors.blue.withOpacity(0.5),
+                          borderStrokeWidth: 2,
+                          borderColor: Colors.blue,
+                        ),
+                      ],
+                    ),
+                    MarkerLayer(markers: _createMarkers(_searchResults)),
+                  ],
+                );
           }
         },
       ),
