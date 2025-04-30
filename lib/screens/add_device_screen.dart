@@ -1,14 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import '../classes/device_model.dart';
 
 class AddDeviceScreen extends StatefulWidget {
   const AddDeviceScreen({super.key});
 
   @override
-  _AddDeviceScreenState createState() => _AddDeviceScreenState();
+  State<AddDeviceScreen> createState() => _AddDeviceScreenState();
 }
 
 class _AddDeviceScreenState extends State<AddDeviceScreen> {
@@ -16,6 +18,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
+  String imageBase64 = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -28,6 +31,18 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     'Electronics',
     'Home Appliances',
   ];
+
+  void addImage() {
+    final ImagePicker picker = ImagePicker();
+    picker.pickImage(source: ImageSource.gallery).then((pickedFile) async {
+      if (pickedFile != null) {
+        List<int> imageBytes = await pickedFile.readAsBytes();
+        setState(() {
+          imageBase64 = base64Encode(imageBytes);
+        });
+      }
+    });
+  }
 
   Future<void> addDevice() async {
     if (nameController.text.isEmpty ||
@@ -48,6 +63,13 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       return;
     }
 
+    if (imageBase64.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Voeg een afbeelding toe')));
+      return;
+    }
+
     try {
       final location = locationController.text.trim();
       final request = await http.get(
@@ -58,7 +80,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       final device = Device(
         name: nameController.text.trim(),
         description: descriptionController.text.trim(),
-        imageUrl: 'image_url',
+        imageUrl: imageBase64,
         price: parsedPrice,
         available: true,
         category: selectedCategory,
@@ -66,7 +88,6 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         latitude: double.parse(jsonDecode(request.body)[0]['lat']),
         longitude: double.parse(jsonDecode(request.body)[0]['lon']),
       );
-      print(device.toMap());
       await _firestore.collection('devices').add(device.toMap());
       ScaffoldMessenger.of(
         context,
@@ -121,6 +142,11 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               TextField(
                 controller: locationController,
                 decoration: const InputDecoration(labelText: 'Locatie'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: addImage,
+                child: const Text('Afbeelding kiezen'),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
