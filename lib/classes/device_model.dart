@@ -1,4 +1,5 @@
 class Device {
+  final String id; // Nieuw id-veld toegevoegd
   final String name;
   final String description;
   final String imageUrl;
@@ -10,6 +11,7 @@ class Device {
   final double longitude;
 
   Device({
+    required this.id, // id toegevoegd aan de constructor
     required this.name,
     required this.description,
     required this.imageUrl,
@@ -23,6 +25,7 @@ class Device {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id, // id toegevoegd aan de map
       'name': name,
       'description': description,
       'imageUrl': imageUrl,
@@ -37,6 +40,7 @@ class Device {
 
   factory Device.fromMap(Map<String, dynamic> map) {
     return Device(
+      id: map['id'] ?? '', // id toegevoegd aan de factory constructor
       name: map['name'],
       description: map['description'],
       imageUrl: map['imageUrl'],

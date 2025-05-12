@@ -78,6 +78,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         ),
       );
       final device = Device(
+        id: _firestore.collection('devices').doc().id, 
         name: nameController.text.trim(),
         description: descriptionController.text.trim(),
         imageUrl: imageBase64,
