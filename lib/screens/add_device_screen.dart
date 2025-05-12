@@ -90,6 +90,12 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         longitude: double.parse(jsonDecode(request.body)[0]['lon']),
       );
       await _firestore.collection('devices').add(device.toMap());
+      await FirebaseFirestore.instance.collection('devices').doc(device.id).set({
+        'name': 'Stofzuiger',
+        'description': 'Een krachtige stofzuiger',
+        'price': 10.0,
+        'available': true,
+      });
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Device toegevoegd!')));

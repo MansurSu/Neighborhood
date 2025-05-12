@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import './screens/overview_screen.dart';
+import './screens/overview_screen.dart'; // Ensure this file exists and contains the OverviewScreen class
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

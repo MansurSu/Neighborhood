@@ -50,8 +50,11 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
 
     // Voeg de reservering toe
     await FirebaseFirestore.instance.collection('reservations').add({
-      'deviceId': widget.device.id,
-      'userId': FirebaseAuth.instance.currentUser!.uid, // Huurder ID
+      'deviceId':
+          widget
+              .device
+              .id, // Zorg ervoor dat dit overeenkomt met het ID in de devices-collectie
+      'userId': FirebaseAuth.instance.currentUser!.uid,
       'start': startDate!.toIso8601String(),
       'end': endDate!.toIso8601String(),
       'timestamp': Timestamp.now(),

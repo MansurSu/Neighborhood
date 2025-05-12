@@ -40,16 +40,16 @@ class Device {
 
   factory Device.fromMap(Map<String, dynamic> map) {
     return Device(
-      id: map['id'] ?? '', // id toegevoegd aan de factory constructor
-      name: map['name'],
-      description: map['description'],
-      imageUrl: map['imageUrl'],
-      price: map['price'],
-      available: map['available'],
-      category: map['category'],
-      location: map['location'] ?? 'Unknown',
-      latitude: map['latitude'] ?? 0.0,
-      longitude: map['longitude'] ?? 0.0,
+      id: map['id'] ?? '',
+      name: map['name'] ?? 'Onbekend apparaat',
+      description: map['description'] ?? '',
+      imageUrl: map['imageUrl'] ?? '',
+      price: map['price']?.toDouble() ?? 0.0,
+      available: map['available'] ?? false,
+      category: map['category'] ?? '',
+      location: map['location'] ?? '',
+      latitude: map['latitude']?.toDouble() ?? 0.0,
+      longitude: map['longitude']?.toDouble() ?? 0.0,
     );
   }
 }
