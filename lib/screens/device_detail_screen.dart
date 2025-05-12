@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert'; // Voor base64Decode
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Voor FirebaseAuth
 import '../classes/device_model.dart';
 
 class DeviceDetailScreen extends StatefulWidget {
@@ -26,8 +27,31 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
       return;
     }
 
+    // Controleer of het apparaat al gereserveerd is
+    final reservations =
+        await FirebaseFirestore.instance
+            .collection('reservations')
+            .where('deviceId', isEqualTo: widget.device.id)
+            .get();
+
+    for (var reservation in reservations.docs) {
+      final start = DateTime.parse(reservation['start']);
+      final end = DateTime.parse(reservation['end']);
+
+      if (startDate!.isBefore(end) && endDate!.isAfter(start)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Dit apparaat is al gereserveerd voor deze periode.'),
+          ),
+        );
+        return;
+      }
+    }
+
+    // Voeg de reservering toe
     await FirebaseFirestore.instance.collection('reservations').add({
       'deviceId': widget.device.id,
+      'userId': FirebaseAuth.instance.currentUser!.uid, // Huurder ID
       'start': startDate!.toIso8601String(),
       'end': endDate!.toIso8601String(),
       'timestamp': Timestamp.now(),
@@ -137,7 +161,7 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
 
             // Knop om te reserveren
             ElevatedButton(
-              onPressed: reserveDevice,
+              onPressed: widget.device.available ? reserveDevice : null,
               child: const Text('Reserveer'),
             ),
           ],

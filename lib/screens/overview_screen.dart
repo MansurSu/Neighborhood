@@ -4,6 +4,7 @@ import 'package:neighborhood_app/screens/overview_map_screen.dart';
 import '../classes/device_model.dart';
 import 'add_device_screen.dart';
 import 'device_detail_screen.dart';
+import 'RentedDevicesScreen.dart';
 
 class OverviewScreen extends StatefulWidget {
   const OverviewScreen({super.key});
@@ -160,7 +161,44 @@ class _OverviewScreenState extends State<OverviewScreen> {
         },
         child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RentedDevicesScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Profile', style: TextStyle(fontSize: 16)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RentedDevicesScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.person),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -212,6 +250,56 @@ class ItemListScreen extends StatelessWidget {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Neighborhood App')),
+      body: const Center(child: Text('Welkom bij de Neighborhood App!')),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigeren naar AddDeviceScreen
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddDeviceScreen()),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Profile knop
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: TextButton(
+                onPressed: () {
+                  // Navigeren naar RentedDevicesScreen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RentedDevicesScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Profile', style: TextStyle(fontSize: 16)),
+              ),
+            ),
+            // Placeholder voor balans met de "+" knop
+            const SizedBox(width: 48), // Ruimte voor de FloatingActionButton
+          ],
+        ),
       ),
     );
   }
