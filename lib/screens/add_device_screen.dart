@@ -174,28 +174,73 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Device')),
+      appBar: AppBar(
+        title: const Text('Add Device'),
+        backgroundColor: Colors.blueAccent,
+        elevation: 4.0,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text(
+                'Add a New Device',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              const SizedBox(height: 20),
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
               ),
+              const SizedBox(height: 16),
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
               ),
+              const SizedBox(height: 16),
               TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Price'),
+                decoration: InputDecoration(
+                  labelText: 'Price',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
               ),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: selectedCategory,
-                decoration: const InputDecoration(labelText: 'Category'),
+                decoration: InputDecoration(
+                  labelText: 'Category',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
                 items:
                     categories.map((String category) {
                       return DropdownMenuItem<String>(
@@ -209,25 +254,64 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                   });
                 },
               ),
+              const SizedBox(height: 16),
               TextField(
                 controller: locationController,
-                decoration: const InputDecoration(labelText: 'Locatie'),
+                decoration: InputDecoration(
+                  labelText: 'Location',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
               ),
-              ElevatedButton(
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
                 onPressed: () {
                   if (!locationIsSet) {
                     getUserLocation();
                   }
                 },
-                child: const Text('Huidige lolcatie gebruiken'),
+                icon: const Icon(Icons.location_on),
+                label: const Text('Use Current Location'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: addImage,
-                child: const Text('Choose Image'),
+                icon: const Icon(Icons.image),
+                label: const Text('Choose Image'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(onPressed: addDevice, child: const Text('Add')),
+              ElevatedButton.icon(
+                onPressed: addDevice,
+                icon: const Icon(Icons.add),
+                label: const Text('Add Device'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                ),
+              ),
             ],
           ),
         ),

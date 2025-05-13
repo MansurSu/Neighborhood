@@ -106,7 +106,11 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.device.name)),
+      appBar: AppBar(
+        title: Text(widget.device.name),
+        backgroundColor: Colors.blueAccent,
+        elevation: 4.0,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -116,31 +120,65 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
               Center(
                 child:
                     widget.device.imageUrl != "image_url"
-                        ? Image.memory(
-                          base64Decode(widget.device.imageUrl),
-                          height: 200,
-                          width: 200,
-                          fit: BoxFit.cover,
+                        ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.memory(
+                            base64Decode(widget.device.imageUrl),
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                         )
                         : const Text(
                           'No image available',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
                         ),
               ),
             const SizedBox(height: 20),
 
             Text(
-              'Description: ${widget.device.description}',
-              style: const TextStyle(fontSize: 16),
+              'Description',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
+            Text(
+              widget.device.description,
+              style: const TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+            const SizedBox(height: 20),
 
             Text(
-              'Price: €${widget.device.price.toStringAsFixed(2)} per day',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              'Price',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
+            Text(
+              '€${widget.device.price.toStringAsFixed(2)} per day',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(height: 20),
 
+            Text(
+              'Availability',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
+            ),
+            const SizedBox(height: 8),
             Text(
               isAvailable
                   ? 'Available'
@@ -150,21 +188,39 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
                 color: isAvailable ? Colors.green : Colors.red,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
 
             Text(
-              'Category: ${widget.device.category}',
-              style: const TextStyle(fontSize: 16),
+              'Category',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
             ),
-            const SizedBox(height: 10),
-
+            const SizedBox(height: 8),
             Text(
-              'Location: ${widget.device.location}',
-              style: const TextStyle(fontSize: 16),
+              widget.device.category,
+              style: const TextStyle(fontSize: 16, color: Colors.black87),
             ),
             const SizedBox(height: 20),
 
-            ElevatedButton(
+            Text(
+              'Location',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.device.location,
+              style: const TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+            const SizedBox(height: 20),
+
+            ElevatedButton.icon(
               onPressed: () async {
                 final now = DateTime.now();
                 final picked = await showDateRangePicker(
@@ -183,8 +239,18 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
                   });
                 }
               },
-              child: const Text('Choose period'),
+              icon: const Icon(Icons.calendar_today),
+              label: const Text('Choose period'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 12.0,
+                ),
+              ),
             ),
+            const SizedBox(height: 20),
 
             if (startDate != null && endDate != null)
               Padding(
@@ -192,14 +258,23 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
                 child: Text(
                   'From: ${startDate!.toLocal().toString().split(' ')[0]} '
                   'to: ${endDate!.toLocal().toString().split(' ')[0]}',
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16, color: Colors.black87),
                 ),
               ),
             const SizedBox(height: 20),
 
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: reserveDevice,
-              child: const Text('Reserve'),
+              icon: const Icon(Icons.check_circle),
+              label: const Text('Reserve'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 12.0,
+                ),
+              ),
             ),
           ],
         ),
