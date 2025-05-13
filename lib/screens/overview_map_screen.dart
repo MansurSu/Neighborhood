@@ -39,7 +39,6 @@ class _OverviewMapScreenState extends State<OverviewMapScreen> {
     isLoading = false;
   }
 
-  //add markers with the location of the devices to the map
   List<Marker> _createMarkers(List<Device> devices) {
     return devices.map((device) {
       return Marker(
@@ -73,7 +72,7 @@ class _OverviewMapScreenState extends State<OverviewMapScreen> {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('Geen items in deze categorie'));
+            return const Center(child: Text('No items found'));
           }
 
           final docs = snapshot.data!.docs;
@@ -92,7 +91,6 @@ class _OverviewMapScreenState extends State<OverviewMapScreen> {
             return isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : FlutterMap(
-                  //draw a circe to the map at a certain distance from the _center
                   options: MapOptions(initialCenter: _center, initialZoom: 9.2),
                   children: [
                     TileLayer(

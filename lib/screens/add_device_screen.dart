@@ -69,23 +69,23 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         priceController.text.isEmpty ||
         (locationController.text.isEmpty && !locationIsSet)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vul alle velden correct in')),
+        const SnackBar(content: Text('Fill in all fields correctly')),
       );
       return;
     }
 
     double? parsedPrice = double.tryParse(priceController.text.trim());
     if (parsedPrice == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Prijs moet een getal zijn')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Price must be a number')));
       return;
     }
 
     if (imageBase64.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Voeg een afbeelding toe')));
+      ).showSnackBar(const SnackBar(content: Text('Add an image')));
       return;
     }
     if (!locationIsSet) {
@@ -174,7 +174,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Apparaat toevoegen')),
+      appBar: AppBar(title: const Text('Add Device')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -182,20 +182,20 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Naam'),
+                decoration: const InputDecoration(labelText: 'Name'),
               ),
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Beschrijving'),
+                decoration: const InputDecoration(labelText: 'Description'),
               ),
               TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Prijs'),
+                decoration: const InputDecoration(labelText: 'Price'),
               ),
               DropdownButtonFormField<String>(
                 value: selectedCategory,
-                decoration: const InputDecoration(labelText: 'Categorie'),
+                decoration: const InputDecoration(labelText: 'Category'),
                 items:
                     categories.map((String category) {
                       return DropdownMenuItem<String>(
@@ -224,13 +224,10 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: addImage,
-                child: const Text('Afbeelding kiezen'),
+                child: const Text('Choose Image'),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: addDevice,
-                child: const Text('Toevoegen'),
-              ),
+              ElevatedButton(onPressed: addDevice, child: const Text('Add')),
             ],
           ),
         ),

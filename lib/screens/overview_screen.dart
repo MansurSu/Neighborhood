@@ -67,7 +67,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Zoek naar een apparaat... 🔍',
+                      hintText: 'Search for a device... 🔍',
                       prefixIcon: const Icon(Icons.search),
                       suffixIcon:
                           _searchController.text.isNotEmpty
@@ -92,7 +92,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 ElevatedButton.icon(
                   onPressed: () => _searchDevices(_searchController.text),
                   icon: const Icon(Icons.search),
-                  label: const Text("Zoek"),
+                  label: const Text("Search"),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -179,23 +179,18 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     ),
                   );
                 },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                ),
                 child: const Text('Profile', style: TextStyle(fontSize: 16)),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RentedDevicesScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.person),
-              ),
-            ),
+            const SizedBox(width: 48),
           ],
         ),
       ),
@@ -225,7 +220,7 @@ class ItemListScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('Geen items in deze categorie'));
+            return const Center(child: Text('No items in this category'));
           }
 
           final docs = snapshot.data!.docs;
@@ -262,11 +257,10 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Neighborhood App')),
-      body: const Center(child: Text('Welkom bij de Neighborhood App!')),
+      body: const Center(child: Text('Welcome to the Neighborhood App!')),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigeren naar AddDeviceScreen
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddDeviceScreen()),
@@ -280,12 +274,10 @@ class MainScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Profile knop
             Padding(
               padding: const EdgeInsets.only(left: 16.0),
               child: TextButton(
                 onPressed: () {
-                  // Navigeren naar RentedDevicesScreen
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -293,11 +285,18 @@ class MainScreen extends StatelessWidget {
                     ),
                   );
                 },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                ),
                 child: const Text('Profile', style: TextStyle(fontSize: 16)),
               ),
             ),
-            // Placeholder voor balans met de "+" knop
-            const SizedBox(width: 48), // Ruimte voor de FloatingActionButton
+            const SizedBox(width: 48),
           ],
         ),
       ),
