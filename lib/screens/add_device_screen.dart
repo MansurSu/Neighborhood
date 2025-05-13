@@ -50,7 +50,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         priceController.text.isEmpty ||
         locationController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vul alle velden correct in')),
+        const SnackBar(content: Text('Fill in all fields correctly')),
       );
       return;
     }
@@ -58,7 +58,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     double? parsedPrice = double.tryParse(priceController.text.trim());
     if (parsedPrice == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Prijs moet een getal zijn')),
+        const SnackBar(content: Text('Price must be a number')),
       );
       return;
     }
@@ -66,7 +66,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     if (imageBase64.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Voeg een afbeelding toe')));
+      ).showSnackBar(const SnackBar(content: Text('Add an image')));
       return;
     }
 
@@ -92,12 +92,12 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       await _firestore.collection('devices').doc(device.id).set(device.toMap());
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Device toegevoegd!')));
+      ).showSnackBar(const SnackBar(content: Text('Device added!')));
       Navigator.pop(context);
     } catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Er ging iets mis bij het toevoegen')),
+        const SnackBar(content: Text('Something went wrong')),
       );
     }
   }
@@ -105,7 +105,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Apparaat toevoegen')),
+      appBar: AppBar(title: const Text('Add Device')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -113,20 +113,20 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Naam'),
+                decoration: const InputDecoration(labelText: 'Name'),
               ),
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Beschrijving'),
+                decoration: const InputDecoration(labelText: 'Description'),
               ),
               TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Prijs'),
+                decoration: const InputDecoration(labelText: 'Price'),
               ),
               DropdownButtonFormField<String>(
                 value: selectedCategory,
-                decoration: const InputDecoration(labelText: 'Categorie'),
+                decoration: const InputDecoration(labelText: 'Category'),
                 items:
                     categories.map((String category) {
                       return DropdownMenuItem<String>(
@@ -142,17 +142,17 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               ),
               TextField(
                 controller: locationController,
-                decoration: const InputDecoration(labelText: 'Locatie'),
+                decoration: const InputDecoration(labelText: 'Location'),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: addImage,
-                child: const Text('Afbeelding kiezen'),
+                child: const Text('Choose Image'),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: addDevice,
-                child: const Text('Toevoegen'),
+                child: const Text('Add'),
               ),
             ],
           ),

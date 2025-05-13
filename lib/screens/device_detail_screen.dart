@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:convert'; // Voor base64Decode
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Voor FirebaseAuth
+import 'package:firebase_auth/firebase_auth.dart';
 import '../classes/device_model.dart';
 
 class DeviceDetailScreen extends StatefulWidget {
@@ -21,13 +21,12 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
     if (startDate == null || endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Selecteer een periode voordat je reserveert.'),
+          content: Text('Select a period before reserving.'),
         ),
       );
       return;
     }
 
-    // Controleer of het apparaat al gereserveerd is
     final reservations =
         await FirebaseFirestore.instance
             .collection('reservations')
@@ -41,19 +40,15 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
       if (startDate!.isBefore(end) && endDate!.isAfter(start)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Dit apparaat is al gereserveerd voor deze periode.'),
+            content: Text('This device is already reserved for this period.'),
           ),
         );
         return;
       }
     }
 
-    // Voeg de reservering toe
     await FirebaseFirestore.instance.collection('reservations').add({
-      'deviceId':
-          widget
-              .device
-              .id, // Zorg ervoor dat dit overeenkomt met het ID in de devices-collectie
+      'deviceId': widget.device.id,
       'userId': FirebaseAuth.instance.currentUser!.uid,
       'start': startDate!.toIso8601String(),
       'end': endDate!.toIso8601String(),
@@ -62,7 +57,7 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
 
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Toestel gereserveerd! 🎉')));
+    ).showSnackBar(const SnackBar(content: Text('Device rented! 🎉')));
   }
 
   @override
@@ -74,41 +69,36 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Afbeelding van het apparaat
             if (widget.device.imageUrl.isNotEmpty)
               Center(
-                child:
-                    widget.device.imageUrl != "image_url"
-                        ? Image.memory(
-                          base64Decode(widget.device.imageUrl),
-                          height: 200,
-                          width: 200,
-                          fit: BoxFit.cover,
-                        )
-                        : const Text(
-                          'Geen afbeelding beschikbaar',
-                          style: TextStyle(fontSize: 18),
-                        ),
+                child: widget.device.imageUrl != "image_url"
+                    ? Image.memory(
+                        base64Decode(widget.device.imageUrl),
+                        height: 200,
+                        width: 200,
+                        fit: BoxFit.cover,
+                      )
+                    : const Text(
+                        'No image available',
+                        style: TextStyle(fontSize: 18),
+                      ),
               ),
             const SizedBox(height: 20),
 
-            // Beschrijving van het apparaat
             Text(
-              'Beschrijving: ${widget.device.description}',
+              'Description: ${widget.device.description}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
 
-            // Prijs
             Text(
-              'Prijs: €${widget.device.price.toStringAsFixed(2)} per dag',
+              'Price: €${widget.device.price.toStringAsFixed(2)} per day',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
-            // Beschikbaarheid
             Text(
-              widget.device.available ? 'Beschikbaar' : 'Niet beschikbaar',
+              widget.device.available ? 'Available' : 'Not available',
               style: TextStyle(
                 fontSize: 16,
                 color: widget.device.available ? Colors.green : Colors.red,
@@ -116,21 +106,18 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
             ),
             const SizedBox(height: 10),
 
-            // Categorie
             Text(
-              'Categorie: ${widget.device.category}',
+              'Category: ${widget.device.category}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
 
-            // Locatie
             Text(
-              'Locatie: ${widget.device.location}',
+              'Location: ${widget.device.location}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),
 
-            // Knop om een periode te kiezen
             ElevatedButton(
               onPressed: () async {
                 final now = DateTime.now();
@@ -147,25 +134,23 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
                   });
                 }
               },
-              child: const Text('Kies periode'),
+              child: const Text('Choose period'),
             ),
 
-            // Geselecteerde datums weergeven
             if (startDate != null && endDate != null)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
-                  'Van: ${startDate!.toLocal().toString().split(' ')[0]} '
-                  'tot: ${endDate!.toLocal().toString().split(' ')[0]}',
+                  'From: ${startDate!.toLocal().toString().split(' ')[0]} '
+                  'to: ${endDate!.toLocal().toString().split(' ')[0]}',
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
             const SizedBox(height: 20),
 
-            // Knop om te reserveren
             ElevatedButton(
               onPressed: widget.device.available ? reserveDevice : null,
-              child: const Text('Reserveer'),
+              child: const Text('Reserve'),
             ),
           ],
         ),

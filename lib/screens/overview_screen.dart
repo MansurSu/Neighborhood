@@ -67,7 +67,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Zoek naar een apparaat... 🔍',
+                      hintText: 'Search for a device... 🔍',
                       prefixIcon: const Icon(Icons.search),
                       suffixIcon:
                           _searchController.text.isNotEmpty
@@ -92,7 +92,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 ElevatedButton.icon(
                   onPressed: () => _searchDevices(_searchController.text),
                   icon: const Icon(Icons.search),
-                  label: const Text("Zoek"),
+                  label: const Text("Search"),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -220,7 +220,7 @@ class ItemListScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('Geen items in deze categorie'));
+            return const Center(child: Text('No items in this category'));
           }
 
           final docs = snapshot.data!.docs;
@@ -257,7 +257,7 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Neighborhood App')),
-      body: const Center(child: Text('Welkom bij de Neighborhood App!')),
+      body: const Center(child: Text('Welcome to the Neighborhood App!')),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {

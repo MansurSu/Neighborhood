@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import './screens/overview_screen.dart'; // Ensure this file exists and contains the OverviewScreen class
+import './screens/overview_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> register() async {
     if (registerPasswordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Wachtwoorden komen niet overeen')),
+        const SnackBar(content: Text('Passwords do not match')),
       );
       return;
     }
@@ -56,13 +56,13 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Account aangemaakt!')));
+      ).showSnackBar(const SnackBar(content: Text('Account created!')));
     } on FirebaseAuthException catch (e) {
-      String message = 'Registratie mislukt';
+      String message = 'Registration failed';
       if (e.code == 'weak-password') {
-        message = 'Het wachtwoord is te zwak.';
+        message = 'The password is too weak.';
       } else if (e.code == 'email-already-in-use') {
-        message = 'Dit e-mailadres is al in gebruik.';
+        message = 'This email address is already in use.';
       }
       ScaffoldMessenger.of(
         context,
@@ -70,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // 🔑 Inloggen met bestaande gebruikersgegevens
   Future<void> login() async {
     try {
       await _auth.signInWithEmailAndPassword(
@@ -79,17 +78,17 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Succesvol ingelogd!')));
+      ).showSnackBar(const SnackBar(content: Text('Successfully logged in!')));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => OverviewScreen()),
       );
     } on FirebaseAuthException catch (e) {
-      String message = 'Login mislukt';
+      String message = 'Login failed';
       if (e.code == 'user-not-found') {
-        message = 'Geen account gevonden voor dit e-mailadres.';
+        message = 'No account found for this email address.';
       } else if (e.code == 'wrong-password') {
-        message = 'Ongeldig wachtwoord.';
+        message = 'Invalid password.';
       }
       ScaffoldMessenger.of(
         context,
@@ -137,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Text('Login'),
               ),
             ),
-            const SizedBox(height: 40), 
+            const SizedBox(height: 40),
             const Text(
               'Register',
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),

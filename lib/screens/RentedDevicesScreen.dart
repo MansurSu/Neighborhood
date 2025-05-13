@@ -7,19 +7,17 @@ class RentedDevicesScreen extends StatelessWidget {
 
   Future<void> cancelReservation(String reservationId, String deviceId) async {
     try {
-      // Verwijder de reservering uit de reservations-collectie
       await FirebaseFirestore.instance
           .collection('reservations')
           .doc(reservationId)
           .delete();
 
-      // Zet het apparaat weer beschikbaar in de devices-collectie
       await FirebaseFirestore.instance
           .collection('devices')
           .doc(deviceId)
           .update({'available': true});
     } catch (e) {
-      print('Error bij annuleren: $e');
+      print('Error during cancellation: $e');
     }
   }
 
@@ -28,7 +26,7 @@ class RentedDevicesScreen extends StatelessWidget {
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mijn Gehuurde Toestellen')),
+      appBar: AppBar(title: const Text('My rented devices')),
       body: StreamBuilder<QuerySnapshot>(
         stream:
             FirebaseFirestore.instance
@@ -42,7 +40,7 @@ class RentedDevicesScreen extends StatelessWidget {
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(
-              child: Text('Je hebt nog geen toestellen gehuurd.'),
+              child: Text('No devices.'),
             );
           }
 
@@ -64,18 +62,18 @@ class RentedDevicesScreen extends StatelessWidget {
                 builder: (context, deviceSnapshot) {
                   if (deviceSnapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return const ListTile(title: Text('Laden...'));
+                    return const ListTile(title: Text('Loading...'));
                   }
 
                   if (!deviceSnapshot.hasData || !deviceSnapshot.data!.exists) {
                     return const ListTile(
-                      title: Text('Apparaat niet gevonden'),
+                      title: Text('Device not found'),
                     );
                   }
 
                   final deviceData =
                       deviceSnapshot.data!.data() as Map<String, dynamic>;
-                  final deviceName = deviceData['name'] ?? 'Onbekend apparaat';
+                  final deviceName = deviceData['name'] ?? 'Uknown Device';
 
                   return ListTile(
                     title: Text(deviceName),
@@ -84,13 +82,13 @@ class RentedDevicesScreen extends StatelessWidget {
                         await cancelReservation(reservationId, deviceId);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Reservering geannuleerd'),
+                            content: Text('Item returned successfully'),
                           ),
                         );
                       },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red, // Tekstkleur
-                        side: const BorderSide(color: Colors.red), // Randkleur
+                        foregroundColor: Colors.red, 
+                        side: const BorderSide(color: Colors.red), 
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16.0,
                           vertical: 8.0,
