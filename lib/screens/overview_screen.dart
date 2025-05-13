@@ -236,7 +236,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 16.0),
-              child: TextButton(
+              child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -245,37 +245,47 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     ),
                   );
                 },
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
+                icon: const Icon(
+                  Icons.book,
+                  size: 20,
+                ), // Icoon aangepast naar een boek
+                label: const Text(
+                  'Reservations',
+                ), // Tekst aangepast naar "Reservations"
+                style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
                     vertical: 8.0,
                   ),
                 ),
-                child: const Text('Profile', style: TextStyle(fontSize: 16)),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MyDevicesScreen(),
+            const SizedBox(width: 48), // Ruimte voor de FloatingActionButton
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyDevicesScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.devices, size: 20),
+                label: const Text('My Devices'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
                 ),
               ),
-              child: const Text('My Devices'),
             ),
-            const SizedBox(width: 48),
           ],
         ),
       ),
