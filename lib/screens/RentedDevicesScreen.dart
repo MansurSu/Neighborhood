@@ -70,3 +70,4 @@ class RentedDevicesScreen extends StatelessWidget {
     );
   }
 }
+
