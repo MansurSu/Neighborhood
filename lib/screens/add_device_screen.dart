@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import '../classes/device_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddDeviceScreen extends StatefulWidget {
   const AddDeviceScreen({super.key});
@@ -57,9 +58,9 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
     double? parsedPrice = double.tryParse(priceController.text.trim());
     if (parsedPrice == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Price must be a number')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Price must be a number')));
       return;
     }
 
@@ -77,6 +78,8 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
           "https://nominatim.openstreetmap.org/search.php?q=${location.replaceAll(" ", "+")}&format=jsonv2",
         ),
       );
+      final latitude = double.parse(jsonDecode(request.body)[0]['lat']);
+      final longitude = double.parse(jsonDecode(request.body)[0]['lon']);
       final device = Device(
         id: _firestore.collection('devices').doc().id,
         name: nameController.text.trim(),
@@ -86,19 +89,34 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         available: true,
         category: selectedCategory,
         location: location,
-        latitude: double.parse(jsonDecode(request.body)[0]['lat']),
-        longitude: double.parse(jsonDecode(request.body)[0]['lon']),
+        latitude: latitude,
+        longitude: longitude,
       );
-      await _firestore.collection('devices').doc(device.id).set(device.toMap());
+      await FirebaseFirestore.instance.collection('devices').doc(device.id).set(
+        {
+          'id': device.id,
+          'name': nameController.text.trim(),
+          'description': descriptionController.text.trim(),
+          'imageUrl': imageBase64,
+          'price': parsedPrice,
+          'available': true,
+          'category': selectedCategory,
+          'location': location,
+          'latitude': latitude,
+          'longitude': longitude,
+          'ownerId':
+              FirebaseAuth.instance.currentUser!.uid, // Voeg de eigenaar toe
+        },
+      );
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Device added!')));
       Navigator.pop(context);
     } catch (e) {
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Something went wrong')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Something went wrong')));
     }
   }
 
@@ -150,10 +168,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                 child: const Text('Choose Image'),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: addDevice,
-                child: const Text('Add'),
-              ),
+              ElevatedButton(onPressed: addDevice, child: const Text('Add')),
             ],
           ),
         ),

@@ -5,6 +5,7 @@ import '../classes/device_model.dart';
 import 'add_device_screen.dart';
 import 'device_detail_screen.dart';
 import 'RentedDevicesScreen.dart';
+import 'MyDevicesScreen.dart';
 
 class OverviewScreen extends StatefulWidget {
   const OverviewScreen({super.key});
@@ -189,6 +190,17 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 ),
                 child: const Text('Profile', style: TextStyle(fontSize: 16)),
               ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MyDevicesScreen(),
+                  ),
+                );
+              },
+              child: const Text('My Devices'),
             ),
             const SizedBox(width: 48),
           ],
