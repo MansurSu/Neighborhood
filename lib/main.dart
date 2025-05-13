@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Login and Register Screen',
+      title: 'Neighborrent',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const LoginScreen(),
     );
@@ -43,9 +43,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> register() async {
     if (registerPasswordController.text != confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       return;
     }
 
@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ).showSnackBar(const SnackBar(content: Text('Successfully logged in!')));
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => OverviewScreen()),
+        MaterialPageRoute(builder: (context) => const OverviewScreen()),
       );
     } on FirebaseAuthException catch (e) {
       String message = 'Login failed';
@@ -99,7 +99,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Neighborrent')),
+      appBar: AppBar(
+        title: const Text('Neighborrent'),
+        backgroundColor: Colors.blueAccent,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -108,15 +111,23 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             const Text(
               'Login',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
             ),
             const SizedBox(height: 20),
             const Text('Email', style: TextStyle(fontSize: 16)),
             TextField(
               controller: loginEmailController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: 'Enter your email',
+                filled: true,
+                fillColor: Colors.grey[200],
               ),
             ),
             const SizedBox(height: 20),
@@ -124,30 +135,49 @@ class _LoginScreenState extends State<LoginScreen> {
             TextField(
               controller: loginPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: 'Enter your password',
+                filled: true,
+                fillColor: Colors.grey[200],
               ),
             ),
             const SizedBox(height: 30),
             Center(
               child: ElevatedButton(
                 onPressed: login,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0,
+                    vertical: 12.0,
+                  ),
+                ),
                 child: const Text('Login'),
               ),
             ),
             const SizedBox(height: 40),
             const Text(
               'Register',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
             ),
             const SizedBox(height: 20),
             const Text('Email', style: TextStyle(fontSize: 16)),
             TextField(
               controller: registerEmailController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: 'Enter your email',
+                filled: true,
+                fillColor: Colors.grey[200],
               ),
             ),
             const SizedBox(height: 20),
@@ -155,9 +185,13 @@ class _LoginScreenState extends State<LoginScreen> {
             TextField(
               controller: registerPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: 'Enter your password',
+                filled: true,
+                fillColor: Colors.grey[200],
               ),
             ),
             const SizedBox(height: 20),
@@ -165,15 +199,26 @@ class _LoginScreenState extends State<LoginScreen> {
             TextField(
               controller: confirmPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: 'Confirm your password',
+                filled: true,
+                fillColor: Colors.grey[200],
               ),
             ),
             const SizedBox(height: 30),
             Center(
               child: ElevatedButton(
                 onPressed: register,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0,
+                    vertical: 12.0,
+                  ),
+                ),
                 child: const Text('Register'),
               ),
             ),

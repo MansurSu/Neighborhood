@@ -7,20 +7,22 @@ class MyDevicesScreen extends StatelessWidget {
 
   Future<void> deleteDevice(String deviceId) async {
     try {
-      // Verwijder het apparaat uit de devices-collectie
-      await FirebaseFirestore.instance.collection('devices').doc(deviceId).delete();
+      await FirebaseFirestore.instance
+          .collection('devices')
+          .doc(deviceId)
+          .delete();
 
-      // Verwijder ook eventuele reserveringen die aan dit apparaat gekoppeld zijn
-      final reservations = await FirebaseFirestore.instance
-          .collection('reservations')
-          .where('deviceId', isEqualTo: deviceId)
-          .get();
+      final reservations =
+          await FirebaseFirestore.instance
+              .collection('reservations')
+              .where('deviceId', isEqualTo: deviceId)
+              .get();
 
       for (var reservation in reservations.docs) {
         await reservation.reference.delete();
       }
     } catch (e) {
-      print('Error bij verwijderen van apparaat: $e');
+      print('Error deleting device: $e');
     }
   }
 
@@ -31,12 +33,15 @@ class MyDevicesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Devices'),
+        backgroundColor: Colors.blueAccent,
+        elevation: 4.0,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('devices')
-            .where('ownerId', isEqualTo: userId) // Filter op apparaten van de ingelogde gebruiker
-            .snapshots(),
+        stream:
+            FirebaseFirestore.instance
+                .collection('devices')
+                .where('ownerId', isEqualTo: userId)
+                .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -44,7 +49,10 @@ class MyDevicesScreen extends StatelessWidget {
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(
-              child: Text('You have not added any devices yet.'),
+              child: Text(
+                'You have not added any devices yet.',
+                style: TextStyle(fontSize: 16, color: Colors.black54),
+              ),
             );
           }
 
@@ -56,38 +64,55 @@ class MyDevicesScreen extends StatelessWidget {
               final device = devices[index];
               final deviceData = device.data() as Map<String, dynamic>;
               final deviceName = deviceData['name'] ?? 'Unknown Device';
+              final deviceCategory = deviceData['category'] ?? 'Unknown';
 
-              return ListTile(
-                title: Text(deviceName),
-                subtitle: Text('Category: ${deviceData['category'] ?? 'Unknown'}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () async {
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Delete Device'),
-                        content: const Text('Are you sure you want to delete this device?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Delete'),
-                          ),
-                        ],
-                      ),
-                    );
-
-                    if (confirm == true) {
-                      await deleteDevice(device.id);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Device deleted successfully')),
+              return Card(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 12.0,
+                  vertical: 6.0,
+                ),
+                elevation: 3.0,
+                child: ListTile(
+                  title: Text(
+                    deviceName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('Category: $deviceCategory'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: const Text('Delete Device'),
+                              content: const Text(
+                                'Are you sure you want to delete this device?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed:
+                                      () => Navigator.pop(context, false),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text('Delete'),
+                                ),
+                              ],
+                            ),
                       );
-                    }
-                  },
+
+                      if (confirm == true) {
+                        await deleteDevice(device.id);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Device deleted successfully'),
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 ),
               );
             },
