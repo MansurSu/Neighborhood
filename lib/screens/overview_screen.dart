@@ -57,11 +57,15 @@ class _OverviewScreenState extends State<OverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Categories')),
+      appBar: AppBar(
+        title: const Text('Categories'),
+        backgroundColor: Colors.blueAccent,
+        elevation: 4.0,
+      ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: Row(
               children: [
                 Expanded(
@@ -69,11 +73,17 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Search for a device... 🔍',
-                      prefixIcon: const Icon(Icons.search),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Colors.blueAccent,
+                      ),
                       suffixIcon:
                           _searchController.text.isNotEmpty
                               ? IconButton(
-                                icon: const Icon(Icons.clear),
+                                icon: const Icon(
+                                  Icons.clear,
+                                  color: Colors.red,
+                                ),
                                 onPressed: () {
                                   setState(() {
                                     _searchController.clear();
@@ -84,8 +94,11 @@ class _OverviewScreenState extends State<OverviewScreen> {
                               )
                               : null,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.blueAccent),
                       ),
+                      filled: true,
+                      fillColor: Colors.grey[200],
                     ),
                   ),
                 ),
@@ -94,7 +107,16 @@ class _OverviewScreenState extends State<OverviewScreen> {
                   onPressed: () => _searchDevices(_searchController.text),
                   icon: const Icon(Icons.search),
                   label: const Text("Search"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
+                  ),
                 ),
+                const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -104,6 +126,14 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       ),
                     );
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
+                  ),
                   child: const Text('Map'),
                 ),
               ],
@@ -116,18 +146,35 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       itemCount: _searchResults.length,
                       itemBuilder: (context, index) {
                         final device = _searchResults[index];
-                        return ListTile(
-                          title: Text(device.name),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        DeviceDetailScreen(device: device),
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 12.0,
+                            vertical: 6.0,
+                          ),
+                          elevation: 3.0,
+                          child: ListTile(
+                            title: Text(
+                              device.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
-                            );
-                          },
+                            ),
+                            subtitle: Text('Category: ${device.category}'),
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.blueAccent,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          DeviceDetailScreen(device: device),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     )
@@ -135,18 +182,35 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       itemCount: categories.length,
                       itemBuilder: (context, index) {
                         final category = categories[index];
-                        return ListTile(
-                          title: Text(category),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        ItemListScreen(categoryName: category),
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 12.0,
+                            vertical: 6.0,
+                          ),
+                          elevation: 3.0,
+                          child: ListTile(
+                            title: Text(
+                              category,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
-                            );
-                          },
+                            ),
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.blueAccent,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => ItemListScreen(
+                                        categoryName: category,
+                                      ),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     ),
@@ -160,6 +224,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
             MaterialPageRoute(builder: (context) => const AddDeviceScreen()),
           );
         },
+        backgroundColor: Colors.blueAccent,
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -182,7 +247,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 },
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.blueAccent,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
                     vertical: 8.0,
@@ -200,6 +265,14 @@ class _OverviewScreenState extends State<OverviewScreen> {
                   ),
                 );
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+              ),
               child: const Text('My Devices'),
             ),
             const SizedBox(width: 48),
