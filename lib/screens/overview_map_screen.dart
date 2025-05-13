@@ -33,6 +33,16 @@ class _OverviewMapScreenState extends State<OverviewMapScreen> {
   }
 
   getUserLocation() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are denied')),
+        );
+        return;
+      }
+    }
     currentLocation = await locateUser();
     setState(() {
       _center = LatLng(currentLocation.latitude, currentLocation.longitude);
