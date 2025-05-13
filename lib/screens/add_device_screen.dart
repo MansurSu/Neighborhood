@@ -109,16 +109,13 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
           latitude: double.parse(jsonDecode(request.body)[0]['lat']),
           longitude: double.parse(jsonDecode(request.body)[0]['lon']),
         );
-        await _firestore.collection('devices').add(device.toMap());
-        await FirebaseFirestore.instance
-            .collection('devices')
-            .doc(device.id)
-            .set({
-              'name': 'Stofzuiger',
-              'description': 'Een krachtige stofzuiger',
-              'price': 10.0,
-              'available': true,
-            });
+        await _firestore.collection('devices').add(device.toMap()).then((
+          value,
+        ) {
+          _firestore.collection('devices').doc(value.id).update({
+            'id': value.id,
+          });
+        });
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Device toegevoegd!')));
@@ -149,16 +146,13 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
           latitude: _center.latitude,
           longitude: _center.longitude,
         );
-        await _firestore.collection('devices').add(device.toMap());
-        await FirebaseFirestore.instance
-            .collection('devices')
-            .doc(device.id)
-            .set({
-              'name': 'Stofzuiger',
-              'description': 'Een krachtige stofzuiger',
-              'price': 10.0,
-              'available': true,
-            });
+        await _firestore.collection('devices').add(device.toMap()).then((
+          value,
+        ) {
+          _firestore.collection('devices').doc(value.id).update({
+            'id': value.id,
+          });
+        });
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Device toegevoegd!')));

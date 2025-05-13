@@ -31,7 +31,7 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
     final reservations =
         await FirebaseFirestore.instance
             .collection('reservations')
-            .where('deviceId', isEqualTo: widget.device.id)
+            .where('deviceId', isEqualTo: widget.device)
             .get();
 
     DateTime? latestEndDate;
