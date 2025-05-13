@@ -16,13 +16,54 @@ class DeviceDetailScreen extends StatefulWidget {
 class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
   DateTime? startDate;
   DateTime? endDate;
+  bool isAvailable = true;
+  DateTime? unavailableTill;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAvailability();
+  }
+
+  Future<void> _checkAvailability() async {
+    final now = DateTime.now();
+
+    final reservations =
+        await FirebaseFirestore.instance
+            .collection('reservations')
+            .where('deviceId', isEqualTo: widget.device.id)
+            .get();
+
+    DateTime? latestEndDate;
+
+    for (var reservation in reservations.docs) {
+      final start = DateTime.parse(reservation['start']);
+      final end = DateTime.parse(reservation['end']);
+
+      if (now.isAfter(start) && now.isBefore(end)) {
+        setState(() {
+          isAvailable = false;
+          unavailableTill =
+              end; // Bewaar de einddatum van de huidige reservering
+        });
+        return;
+      }
+
+      if (latestEndDate == null || end.isAfter(latestEndDate)) {
+        latestEndDate = end; // Bewaar de laatste einddatum
+      }
+    }
+
+    setState(() {
+      isAvailable = true;
+      unavailableTill = latestEndDate; // Laatste einddatum van reserveringen
+    });
+  }
 
   Future<void> reserveDevice() async {
     if (startDate == null || endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Select a period before reserving.'),
-        ),
+        const SnackBar(content: Text('Select a period before reserving.')),
       );
       return;
     }
@@ -58,6 +99,8 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Device rented! 🎉')));
+
+    _checkAvailability(); // Update beschikbaarheid na reservering
   }
 
   @override
@@ -71,17 +114,18 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
           children: [
             if (widget.device.imageUrl.isNotEmpty)
               Center(
-                child: widget.device.imageUrl != "image_url"
-                    ? Image.memory(
-                        base64Decode(widget.device.imageUrl),
-                        height: 200,
-                        width: 200,
-                        fit: BoxFit.cover,
-                      )
-                    : const Text(
-                        'No image available',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                child:
+                    widget.device.imageUrl != "image_url"
+                        ? Image.memory(
+                          base64Decode(widget.device.imageUrl),
+                          height: 200,
+                          width: 200,
+                          fit: BoxFit.cover,
+                        )
+                        : const Text(
+                          'No image available',
+                          style: TextStyle(fontSize: 18),
+                        ),
               ),
             const SizedBox(height: 20),
 
@@ -98,10 +142,12 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
             const SizedBox(height: 10),
 
             Text(
-              widget.device.available ? 'Available' : 'Not available',
+              isAvailable
+                  ? 'Available'
+                  : 'Not available till ${unavailableTill != null ? "${unavailableTill!.day} ${_getMonthName(unavailableTill!.month)}" : ""}',
               style: TextStyle(
                 fontSize: 16,
-                color: widget.device.available ? Colors.green : Colors.red,
+                color: isAvailable ? Colors.green : Colors.red,
               ),
             ),
             const SizedBox(height: 10),
@@ -123,7 +169,10 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
                 final now = DateTime.now();
                 final picked = await showDateRangePicker(
                   context: context,
-                  firstDate: now,
+                  firstDate:
+                      unavailableTill != null && unavailableTill!.isAfter(now)
+                          ? unavailableTill!.add(const Duration(days: 1))
+                          : now,
                   lastDate: DateTime(now.year + 1),
                 );
 
@@ -149,12 +198,30 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
             const SizedBox(height: 20),
 
             ElevatedButton(
-              onPressed: widget.device.available ? reserveDevice : null,
+              onPressed: reserveDevice,
               child: const Text('Reserve'),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return months[month - 1];
   }
 }
