@@ -114,10 +114,12 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
             .collection('devices')
             .doc(device.id)
             .set({
-              'name': 'Stofzuiger',
-              'description': 'Een krachtige stofzuiger',
-              'price': 10.0,
+              'name': nameController.text.trim(),
+              'description': descriptionController.text.trim(),
+              'price': double.parse(priceController.text.trim()),
               'available': true,
+              'category': selectedCategory,
+              'ownerId': FirebaseAuth.instance.currentUser!.uid,
             });
         ScaffoldMessenger.of(
           context,
@@ -154,10 +156,12 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
             .collection('devices')
             .doc(device.id)
             .set({
-              'name': 'Stofzuiger',
-              'description': 'Een krachtige stofzuiger',
-              'price': 10.0,
+              'name': nameController.text.trim(),
+              'description': descriptionController.text.trim(),
+              'price': double.parse(priceController.text.trim()),
               'available': true,
+              'category': selectedCategory,
+              'ownerId': FirebaseAuth.instance.currentUser!.uid,
             });
         ScaffoldMessenger.of(
           context,
