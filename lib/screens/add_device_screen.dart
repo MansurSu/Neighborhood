@@ -40,7 +40,10 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
   Future<Position> locateUser() async {
     return Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
     );
   }
 
@@ -108,6 +111,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
           location: location,
           latitude: double.parse(jsonDecode(request.body)[0]['lat']),
           longitude: double.parse(jsonDecode(request.body)[0]['lon']),
+          ownerId: FirebaseAuth.instance.currentUser!.uid,
         );
         await _firestore.collection('devices').add(device.toMap()).then((
           value,
@@ -145,6 +149,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
           location: location,
           latitude: _center.latitude,
           longitude: _center.longitude,
+          ownerId: FirebaseAuth.instance.currentUser!.uid,
         );
         await _firestore.collection('devices').add(device.toMap()).then((
           value,

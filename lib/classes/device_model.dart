@@ -9,6 +9,7 @@ class Device {
   final String location;
   final double latitude;
   final double longitude;
+  final String ownerId;
 
   Device({
     required this.id, // id toegevoegd aan de constructor
@@ -21,6 +22,7 @@ class Device {
     required this.location,
     required this.latitude,
     required this.longitude,
+    required this.ownerId,
   });
 
   Map<String, dynamic> toMap() {
@@ -35,6 +37,7 @@ class Device {
       'location': location,
       'latitude': latitude,
       'longitude': longitude,
+      'ownerId': ownerId,
     };
   }
 
@@ -50,6 +53,7 @@ class Device {
       location: map['location'] ?? '',
       latitude: map['latitude']?.toDouble() ?? 0.0,
       longitude: map['longitude']?.toDouble() ?? 0.0,
+      ownerId: map['ownerId'] ?? '',
     );
   }
 }
