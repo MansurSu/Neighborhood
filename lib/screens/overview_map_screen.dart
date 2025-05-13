@@ -19,6 +19,7 @@ class _OverviewMapScreenState extends State<OverviewMapScreen> {
   late Position currentLocation;
   bool isLoading = true;
   double radius = 5000;
+  double zoom = 12;
   @override
   void initState() {
     super.initState();
@@ -91,7 +92,10 @@ class _OverviewMapScreenState extends State<OverviewMapScreen> {
             return isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : FlutterMap(
-                  options: MapOptions(initialCenter: _center, initialZoom: 9.2),
+                  options: MapOptions(
+                    initialCenter: _center,
+                    initialZoom: zoom,
+                  ),
                   children: [
                     TileLayer(
                       urlTemplate:
@@ -103,13 +107,42 @@ class _OverviewMapScreenState extends State<OverviewMapScreen> {
                           point: _center,
                           useRadiusInMeter: true,
                           radius: radius,
-                          color: Colors.blue.withOpacity(0.5),
+                          color: Colors.blue.withValues(alpha: 0.5),
                           borderStrokeWidth: 2,
                           borderColor: Colors.blue,
                         ),
                       ],
                     ),
                     MarkerLayer(markers: _createMarkers(_searchResults)),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Column(
+                        children: [
+                          ElevatedButton(
+                            child: Text("-"),
+                            onPressed: () {
+                              setState(() {
+                                radius *= 2;
+                                zoom--;
+                              });
+                            },
+                          ),
+                          ElevatedButton(
+                            child: Text("+"),
+                            onPressed: () {
+                              setState(() {
+                                radius /= 2;
+                                zoom++;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text("Distance: ${radius / 1000} km"),
+                    ),
                   ],
                 );
           }
