@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import '../classes/device_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:latlong2/latlong.dart';
 
 class AddDeviceScreen extends StatefulWidget {
   const AddDeviceScreen({super.key});
@@ -19,6 +21,9 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
+  late LatLng _center;
+  late Position currentLocation;
+  bool locationIsSet = false;
   String imageBase64 = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -32,6 +37,20 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     'Electronics',
     'Home Appliances',
   ];
+
+  Future<Position> locateUser() async {
+    return Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+  }
+
+  getUserLocation() async {
+    currentLocation = await locateUser();
+    setState(() {
+      _center = LatLng(currentLocation.latitude, currentLocation.longitude);
+    });
+    locationIsSet = true;
+  }
 
   void addImage() {
     final ImagePicker picker = ImagePicker();
@@ -49,7 +68,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     if (nameController.text.isEmpty ||
         descriptionController.text.isEmpty ||
         priceController.text.isEmpty ||
-        locationController.text.isEmpty) {
+        (locationController.text.isEmpty && !locationIsSet)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Fill in all fields correctly')),
       );
@@ -70,53 +89,86 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       ).showSnackBar(const SnackBar(content: Text('Add an image')));
       return;
     }
-
-    try {
-      final location = locationController.text.trim();
-      final request = await http.get(
-        Uri.parse(
-          "https://nominatim.openstreetmap.org/search.php?q=${location.replaceAll(" ", "+")}&format=jsonv2",
-        ),
-      );
-      final latitude = double.parse(jsonDecode(request.body)[0]['lat']);
-      final longitude = double.parse(jsonDecode(request.body)[0]['lon']);
-      final device = Device(
-        id: _firestore.collection('devices').doc().id,
-        name: nameController.text.trim(),
-        description: descriptionController.text.trim(),
-        imageUrl: imageBase64,
-        price: parsedPrice,
-        available: true,
-        category: selectedCategory,
-        location: location,
-        latitude: latitude,
-        longitude: longitude,
-      );
-      await FirebaseFirestore.instance.collection('devices').doc(device.id).set(
-        {
-          'id': device.id,
-          'name': nameController.text.trim(),
-          'description': descriptionController.text.trim(),
-          'imageUrl': imageBase64,
-          'price': parsedPrice,
-          'available': true,
-          'category': selectedCategory,
-          'location': location,
-          'latitude': latitude,
-          'longitude': longitude,
-          'ownerId':
-              FirebaseAuth.instance.currentUser!.uid, // Voeg de eigenaar toe
-        },
-      );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Device added!')));
-      Navigator.pop(context);
-    } catch (e) {
-      print(e);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Something went wrong')));
+    if (!locationIsSet) {
+      try {
+        final location = locationController.text.trim();
+        final request = await http.get(
+          Uri.parse(
+            "https://nominatim.openstreetmap.org/search.php?q=${location.replaceAll(" ", "+")}&format=jsonv2",
+          ),
+        );
+        final device = Device(
+          id: _firestore.collection('devices').doc().id,
+          name: nameController.text.trim(),
+          description: descriptionController.text.trim(),
+          imageUrl: imageBase64,
+          price: parsedPrice,
+          available: true,
+          category: selectedCategory,
+          location: location,
+          latitude: double.parse(jsonDecode(request.body)[0]['lat']),
+          longitude: double.parse(jsonDecode(request.body)[0]['lon']),
+        );
+        await _firestore.collection('devices').add(device.toMap());
+        await FirebaseFirestore.instance
+            .collection('devices')
+            .doc(device.id)
+            .set({
+              'name': 'Stofzuiger',
+              'description': 'Een krachtige stofzuiger',
+              'price': 10.0,
+              'available': true,
+            });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Device toegevoegd!')));
+        Navigator.pop(context);
+      } catch (e) {
+        print(e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Er ging iets mis bij het toevoegen')),
+        );
+      }
+    } else {
+      try {
+        final request = await http.get(
+          Uri.parse(
+            "https://nominatim.openstreetmap.org/reverse?lat=${_center.latitude}&lon=${_center.longitude}&format=jsonv2",
+          ),
+        );
+        final location = jsonDecode(request.body)['display_name'];
+        final device = Device(
+          id: _firestore.collection('devices').doc().id,
+          name: nameController.text.trim(),
+          description: descriptionController.text.trim(),
+          imageUrl: imageBase64,
+          price: parsedPrice,
+          available: true,
+          category: selectedCategory,
+          location: location,
+          latitude: _center.latitude,
+          longitude: _center.longitude,
+        );
+        await _firestore.collection('devices').add(device.toMap());
+        await FirebaseFirestore.instance
+            .collection('devices')
+            .doc(device.id)
+            .set({
+              'name': 'Stofzuiger',
+              'description': 'Een krachtige stofzuiger',
+              'price': 10.0,
+              'available': true,
+            });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Device toegevoegd!')));
+        Navigator.pop(context);
+      } catch (e) {
+        print(e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Er ging iets mis bij het toevoegen')),
+        );
+      }
     }
   }
 
@@ -160,7 +212,15 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               ),
               TextField(
                 controller: locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration: const InputDecoration(labelText: 'Locatie'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (!locationIsSet) {
+                    getUserLocation();
+                  }
+                },
+                child: const Text('Huidige lolcatie gebruiken'),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
