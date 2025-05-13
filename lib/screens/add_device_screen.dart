@@ -78,7 +78,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         ),
       );
       final device = Device(
-        id: _firestore.collection('devices').doc().id, 
+        id: _firestore.collection('devices').doc().id,
         name: nameController.text.trim(),
         description: descriptionController.text.trim(),
         imageUrl: imageBase64,
@@ -89,13 +89,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         latitude: double.parse(jsonDecode(request.body)[0]['lat']),
         longitude: double.parse(jsonDecode(request.body)[0]['lon']),
       );
-      await _firestore.collection('devices').add(device.toMap());
-      await FirebaseFirestore.instance.collection('devices').doc(device.id).set({
-        'name': 'Stofzuiger',
-        'description': 'Een krachtige stofzuiger',
-        'price': 10.0,
-        'available': true,
-      });
+      await _firestore.collection('devices').doc(device.id).set(device.toMap());
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Device toegevoegd!')));

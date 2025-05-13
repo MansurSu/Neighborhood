@@ -179,23 +179,18 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     ),
                   );
                 },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                ),
                 child: const Text('Profile', style: TextStyle(fontSize: 16)),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RentedDevicesScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.person),
-              ),
-            ),
+            const SizedBox(width: 48),
           ],
         ),
       ),
@@ -266,7 +261,6 @@ class MainScreen extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigeren naar AddDeviceScreen
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddDeviceScreen()),
@@ -280,12 +274,10 @@ class MainScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Profile knop
             Padding(
               padding: const EdgeInsets.only(left: 16.0),
               child: TextButton(
                 onPressed: () {
-                  // Navigeren naar RentedDevicesScreen
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -293,11 +285,18 @@ class MainScreen extends StatelessWidget {
                     ),
                   );
                 },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                ),
                 child: const Text('Profile', style: TextStyle(fontSize: 16)),
               ),
             ),
-            // Placeholder voor balans met de "+" knop
-            const SizedBox(width: 48), // Ruimte voor de FloatingActionButton
+            const SizedBox(width: 48),
           ],
         ),
       ),
